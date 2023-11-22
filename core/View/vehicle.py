@@ -10,10 +10,9 @@ from geopy.distance import geodesic
 
 # Create your views here.
 def vehicle_index(request):
-
+    vehicles = list(Vehicle.objects.values('latitude', 'longitude'))
 
     context = {
-        # '': ,
+        'vehicles': vehicles,
     }
-    
     return render(request, 'index_3.html', context)
