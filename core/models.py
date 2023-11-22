@@ -10,3 +10,10 @@ class EVChargingLocation(models.Model):
 
     def __str__(self):
         return self.station_name
+    
+
+
+# Create your models here.
+class Vehicle(models.Model):
+    latitude  = models.FloatField()
+    longitude = models.FloatField()
