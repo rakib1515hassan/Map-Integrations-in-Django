@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Add School</h1>
+<div class="card-body bg-light">
+    <div class="tab-content">
+        <div class="tab-pane preview-tab-pane active">
+            <form class="row g-3" method="post">
+                {% csrf_token %}
+
+                <div class="col-lg-6 mb-3">
+                    <label class="form-label" for="phone">School Name</label>
+                    {{form.school_name}}
+                </div>
+
+                <!-- Your map container -->
+                <div class="col-lg-8 mb-3" style="min-height: 500px;">
+                    <label class="form-label"> School Add From Map</label>
+                    <div class="h-100 bg-white min-vh-50 position-relative" id="map">
+                        <!-- Full-screen button -->
+                        <span class="map-btn bg-light p-1 fs-3 position-absolute cursor-pointer rounded"
+                            style="top: 10px; right: 10px; z-index: 1000;" id="fullScreenBtn">
+                            <i class="fas fa-expand"></i> Full Screen
+                        </span>
+
+                        <!-- Minimize button -->
+                        <span class="map-btn bg-light p-1 fs-3 position-absolute cursor-pointer rounded"
+                            style="top: 10px; right: 10px; z-index: 1000; display: none" id="minimizeBtn">
+                            <i class="fas fa-compress"></i> Minimize
+                        </span>
+                    </div>
+                    <!-- <input type="hidden" name="latitude" class="form-control" step="any" id="id_latitude">
+            <input type="hidden" name="longitude" class="form-control" step="any" id="id_longitude"> -->
+                    {{form.latitude}}
+                    {{form.longitude}}
+                </div>
+
+                <div class="col-12 d-flex justify-content-start mt-5">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa fa-save me-2"></i>
+                        Submit
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+{% block scripts %}
+<!-- Your JavaScript code -->
+<script>
+    var map = L.map('map').setView([23.810331, 90.412521], 7);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    var marker;
+
+    // Add click event listener to the map
+    map.on('click', function (e) {
+        // Remove existing marker if it exists
+        if (marker) {
+            map.removeLayer(marker);
+        }
+
+        // Create a smaller default marker
+        var smallMarkerIcon = L.icon({
+            iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+            iconSize: [20, 30],  // Adjust the size as needed
+            iconAnchor: [10, 30],
+            popupAnchor: [0, -30]
+        });
+
+        // Place a new marker at the clicked location with the smaller default icon
+        marker = L.marker(e.latlng, { icon: smallMarkerIcon }).addTo(map);
+
+        // Set the latitude and longitude values to the hidden input fields
+        document.getElementById('id_latitude').value = e.latlng.lat;
+        document.getElementById('id_longitude').value = e.latlng.lng;
+
+        // You can retrieve the latitude and longitude from e.latlng
+        // console.log('Latitude:', e.latlng.lat, 'Longitude:', e.latlng.lng);
+    });
+
+    // Full-screen and minimize button functionality
+    var mapContainer = document.getElementById('map');
+    var fullScreenBtn = document.getElementById('fullScreenBtn');
+    var minimizeBtn = document.getElementById('minimizeBtn');
+
+    fullScreenBtn.addEventListener('click', function (e) {
+        e.stopPropagation(); // Stop click event propagation
+
+        if (mapContainer.requestFullscreen) {
+            mapContainer.requestFullscreen();
+        } else if (mapContainer.mozRequestFullScreen) { /* Firefox */
+            mapContainer.mozRequestFullScreen();
+        } else if (mapContainer.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+            mapContainer.webkitRequestFullscreen();
+        } else if (mapContainer.msRequestFullscreen) { /* IE/Edge */
+            mapContainer.msRequestFullscreen();
+        }
+
+        // Show the minimize button and hide the full-screen button
+        minimizeBtn.style.display = 'block';
+        fullScreenBtn.style.display = 'none';
+    });
+
+    minimizeBtn.addEventListener('click', function (e) {
+        e.stopPropagation(); // Stop click event propagation
+
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) { /* Firefox */
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE/Edge */
+            document.msExitFullscreen();
+        }
+
+        // Show the full-screen button and hide the minimize button
+        fullScreenBtn.style.display = 'block';
+        minimizeBtn.style.display = 'none';
+    });
+
+    // Event listener for fullscreen change
+    document.addEventListener('fullscreenchange', handleFullScreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullScreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullScreenChange);
+    document.addEventListener('msfullscreenchange', handleFullScreenChange);
+
+    function handleFullScreenChange() {
+        // Toggle visibility of buttons based on fullscreen state
+        var isFullscreen = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+
+        if (isFullscreen) {
+            minimizeBtn.style.display = 'block';
+            fullScreenBtn.style.display = 'none';
+        } else {
+            fullScreenBtn.style.display = 'block';
+            minimizeBtn.style.display = 'none';
+        }
+    }
+
+    // Submit the form when the submit button is clicked
+    document.getElementById('submitBtn').addEventListener('click', function () {
+        document.querySelector('form').submit();
+    });
+</script>
+{% endblock %}

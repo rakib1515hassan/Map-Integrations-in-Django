@@ -17,3 +17,15 @@ class EVChargingLocation(models.Model):
 class Vehicle(models.Model):
     latitude  = models.FloatField()
     longitude = models.FloatField()
+
+
+
+
+class School(models.Model):
+    school_name = models.CharField(max_length=250)
+
+    latitude  = models.FloatField()
+    longitude = models.FloatField()
+
+    def __str__(self):
+        return self.school_name

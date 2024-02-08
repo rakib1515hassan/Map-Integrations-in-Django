@@ -12,57 +12,57 @@ from geopy.distance import geodesic
 def index(request):
 
     ## NOTE:- For index_1.html------------------------------------------------------
-    # stations = EVChargingLocation.objects.all()
+    stations = EVChargingLocation.objects.all()
 
 
-    # # If we only generate clusters for graterthen the average values, then
-    # # avg_lat  = EVChargingLocation.objects.aggregate(avg = Avg('latitude'))['avg']
-    # # stations = EVChargingLocation.objects.exclude(latitude__gt = avg_lat)
+    # If we only generate clusters for graterthen the average values, then
+    # avg_lat  = EVChargingLocation.objects.aggregate(avg = Avg('latitude'))['avg']
+    # stations = EVChargingLocation.objects.exclude(latitude__gt = avg_lat)
     
     
-    # m = folium.Map(
-    #         location   = [41.5025, -72.699997], 
-    #         zoom_start = 9,
-    #         # position="absolute",
-    #         # left="0%",
-    #         # width="100%",
-    #         # height="100%",
-    #     )
-    # # This show all pints but FastMarkerCluster show the cluster of the points.
-    # # for station in stations:
-    # #     coordinates = ( station.latitude, station.longitude )
-    # #     folium.Marker( coordinates, popup= station.station_name).add_to(m)
+    m = folium.Map(
+            location   = [41.5025, -72.699997], 
+            zoom_start = 9,
+            # position="absolute",
+            # left="0%",
+            # width="100%",
+            # height="100%",
+        )
+    # This show all pints but FastMarkerCluster show the cluster of the points.
+    # for station in stations:
+    #     coordinates = ( station.latitude, station.longitude )
+    #     folium.Marker( coordinates, popup= station.station_name).add_to(m)
 
-    # # Use FastMarkerCluster to generate a the cluster on the map.
-    # # That's why, we pass the list of all (latitude,longitude) tuples in the data.
-    # latitudes  = [station.latitude  for station in stations]
-    # longitudes = [station.longitude for station in stations]
-    # FastMarkerCluster(data = list(zip(latitudes, longitudes))).add_to(m)
+    # Use FastMarkerCluster to generate a the cluster on the map.
+    # That's why, we pass the list of all (latitude,longitude) tuples in the data.
+    latitudes  = [station.latitude  for station in stations]
+    longitudes = [station.longitude for station in stations]
+    FastMarkerCluster(data = list(zip(latitudes, longitudes))).add_to(m)
+
+
+    context = {
+        'map': m._repr_html_(),
+        'stations': stations,
+    }
+    
+    return render(request, 'index_1.html', {'map': m._repr_html_()})
 
 
 
-    ## NOTE:- For index_2.html--------------------------------------------------------
+
+
+
+
+
+## NOTE:- For index_2.html--------------------------------------------------------
+def index2(request):
     stations = list(EVChargingLocation.objects.values('latitude', 'longitude')[:10])
 
     # print("-----------------")
     # print("Result = ", stations)
     # print("-----------------")
-
-
-
-    ##________________________________________________________________________________
-    # context = {
-    #     'map': m._repr_html_(),
-    #     'stations': stations,
-    # }
     
-    # return render(request, 'index_1.html', {'map': m._repr_html_()})
     return render(request, 'index_2.html', {'stations': stations})
-
-
-
-
-
 
 
 
